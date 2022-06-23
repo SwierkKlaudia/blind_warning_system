@@ -113,7 +113,7 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  if((Meas_distance.debounce_counter < DEBOUNCE_CYCLES) && (Meas_distance.invalid_msg == false))
+	  if ((Meas_distance.debounce_counter < DEBOUNCE_CYCLES) && (Meas_distance.invalid_msg == false))
 	  {
 		  Meas_distance.debounce_counter++;
 	  }

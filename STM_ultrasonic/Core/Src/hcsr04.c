@@ -20,11 +20,11 @@ static dist buffor[NUMBER_OF_SAMPLES] = {0};
 
 static dist Average(dist *tab, int N)
 {
-    dist avg;
+    dist avg = 0;
 
-    for(int i = 0; i < N; i++)
+    for (int i = 0; i < N; i++)
     {
-        avg+=tab[i];
+        avg += tab[i];
     }
 
     return (avg/(dist)N);
@@ -33,7 +33,7 @@ static dist Average(dist *tab, int N)
 
 dist Average_Distance(const dist distance)
 {
-	if(sample_counter < NUMBER_OF_SAMPLES)
+	if (sample_counter < NUMBER_OF_SAMPLES)
 	{
 		buffor[sample_counter] = distance;
 		sample_counter++;
