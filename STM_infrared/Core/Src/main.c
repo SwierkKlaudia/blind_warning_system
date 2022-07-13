@@ -36,7 +36,7 @@
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
-#define CONVERT_ADC_TO_DISTANCE(adc_val)	((37376UL / adc_val) - 4)
+#define CONVERT_ADC_TO_DISTANCE(adc_val)	((105500UL / adc_val) - 30)
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
