@@ -22,12 +22,9 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "example_assembly_test.h"
 #include "stdio.h"
 #include "acc_hal_integration.h"
-#include "example_detector_distance.h"
-#include "example_error_handling.h"
-#include "example_bring_up.h"
+#include "detector.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -62,31 +59,12 @@ static void MX_USART1_UART_Init(void);
 static void MX_USB_PCD_Init(void);
 static void MX_SPI1_Init(void);
 /* USER CODE BEGIN PFP */
-static bool hal_test_spi_read_chipid( void );
+
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
-static bool hal_test_spi_read_chipid( void )
-{
-	const uint32_t sensor = 1;
-	uint8_t buffer[6] = {0x30 , 0x0 , 0x0 , 0x0 , 0x0 , 0x0};
-	const acc_hal_t *hal = acc_hal_integration_get_implementation();
-	hal->sensor_device.power_on( sensor ) ;
-	hal->sensor_device.transfer( sensor , buffer , sizeof ( buffer ) ) ;
-	hal->sensor_device.power_off ( sensor ) ;
-	if ( buffer[4] == 0x11 && buffer[5] == 0x12 )
-	{
-		printf ( " Test OK !\n " ) ;
-		return true ;
-	}
-	else
-	{
-		printf ( " Cannot read chip id !\n " ) ;
-		return false ;
-	}
-}
 /* USER CODE END 0 */
 
 /**
@@ -121,40 +99,15 @@ int main(void)
   MX_USB_PCD_Init();
   MX_SPI1_Init();
   /* USER CODE BEGIN 2 */
-  int result1 = acc_example_bring_up(0, NULL );
-//  bool result = hal_test_spi_read_chipid();
-//  int result2 = acc_example_assembly_test(0, NULL);
 
-//  int result4 = acc_example_error_handling(0, NULL);
-//  uint8_t buff_t[6] = {0x30, 0x00, 0x00, 0x00, 0x00, 0x00};
-//  uint8_t buff_r[6];
-//
-//	HAL_GPIO_WritePin(A111_ENABLE_GPIO_Port, A111_ENABLE_Pin, GPIO_PIN_SET);
-//	HAL_Delay(200);
-////	HAL_GPIO_WritePin(A111_CS_N_GPIO_Port, A111_CS_N_Pin, GPIO_PIN_RESET);
-////	HAL_Delay(200);
-////	HAL_GPIO_WritePin(A111_CS_N_GPIO_Port, A111_CS_N_Pin, GPIO_PIN_RESET);
-////	HAL_SPI_Transmit(&hspi1, buff_t, 6, 10000);
-////	HAL_SPI_Receive(&hspi1, buff_r, 6, 10000);
-////	HAL_GPIO_WritePin(A111_CS_N_GPIO_Port, A111_CS_N_Pin, GPIO_PIN_SET);
-//	HAL_SPI_TransmitReceive(&hspi1, buff_t, buff_r, 6, 1000);
-//	HAL_Delay(300);
-//	hal_test_spi_read_chipid();
-//	HAL_Delay(100);
-//	hal_test_spi_read_chipid();
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-//	  if (result1 == 0)
-//	  {
-		  int result3 = acc_example_detector_distance(0, NULL);
-//	  }
-//	  acc_example_detector_distance(0, NULL);
-//	  HAL_Delay(100);
-//	  HAL_SPI_TransmitReceive(&hspi1, buff_t, buff_r, 6, 1000);
+	  detector_presence();
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -385,6 +338,9 @@ static void MX_GPIO_Init(void)
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOB, LD2_Pin|LD3_Pin|LD1_Pin, GPIO_PIN_RESET);
 
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(UART_VCC_GPIO_Port, UART_VCC_Pin, GPIO_PIN_SET);
+
   /*Configure GPIO pins : A111_CS_N_Pin A111_ENABLE_Pin */
   GPIO_InitStruct.Pin = A111_CS_N_Pin|A111_ENABLE_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
@@ -404,8 +360,8 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(B1_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : LD2_Pin LD3_Pin LD1_Pin */
-  GPIO_InitStruct.Pin = LD2_Pin|LD3_Pin|LD1_Pin;
+  /*Configure GPIO pins : LD2_Pin LD3_Pin UART_VCC_Pin LD1_Pin */
+  GPIO_InitStruct.Pin = LD2_Pin|LD3_Pin|UART_VCC_Pin|LD1_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
