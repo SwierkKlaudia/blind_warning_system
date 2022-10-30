@@ -25,6 +25,7 @@
 #include "stdio.h"
 #include "acc_hal_integration.h"
 #include "detector.h"
+#include "string.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -49,7 +50,7 @@ UART_HandleTypeDef huart1;
 PCD_HandleTypeDef hpcd_USB_FS;
 
 /* USER CODE BEGIN PV */
-
+int detector_result = EXIT_FAILURE;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -59,7 +60,7 @@ static void MX_USART1_UART_Init(void);
 static void MX_USB_PCD_Init(void);
 static void MX_SPI1_Init(void);
 /* USER CODE BEGIN PFP */
-
+static void send_distance_UART(float distance);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -99,14 +100,27 @@ int main(void)
   MX_USB_PCD_Init();
   MX_SPI1_Init();
   /* USER CODE BEGIN 2 */
-
+  detector_result = detector_init();
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  detector_presence();
+	  if (EXIT_SUCCESS == detector_result)
+	  {
+		  detector_result = detector_presence();
+		  send_distance_UART(get_detector_distance());
+	  }
+	  else
+	  {
+		  detector_result = detector_deactivate();
+		  if (EXIT_SUCCESS == detector_result)
+		  {
+			  detector_result = detector_init();
+		  }
+	  }
+
 
     /* USER CODE END WHILE */
 
@@ -253,7 +267,7 @@ static void MX_USART1_UART_Init(void)
   /* USER CODE END USART1_Init 1 */
   huart1.Instance = USART1;
   huart1.Init.BaudRate = 115200;
-  huart1.Init.WordLength = UART_WORDLENGTH_7B;
+  huart1.Init.WordLength = UART_WORDLENGTH_8B;
   huart1.Init.StopBits = UART_STOPBITS_1;
   huart1.Init.Parity = UART_PARITY_NONE;
   huart1.Init.Mode = UART_MODE_TX_RX;
@@ -336,10 +350,7 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(GPIOA, A111_CS_N_Pin|A111_ENABLE_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, LD2_Pin|LD3_Pin|LD1_Pin, GPIO_PIN_RESET);
-
-  /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(UART_VCC_GPIO_Port, UART_VCC_Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(GPIOB, LD2_Pin|LD3_Pin|SPEAKER_VCC_Pin|LD1_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pins : A111_CS_N_Pin A111_ENABLE_Pin */
   GPIO_InitStruct.Pin = A111_CS_N_Pin|A111_ENABLE_Pin;
@@ -360,8 +371,8 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(B1_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : LD2_Pin LD3_Pin UART_VCC_Pin LD1_Pin */
-  GPIO_InitStruct.Pin = LD2_Pin|LD3_Pin|UART_VCC_Pin|LD1_Pin;
+  /*Configure GPIO pins : LD2_Pin LD3_Pin SPEAKER_VCC_Pin LD1_Pin */
+  GPIO_InitStruct.Pin = LD2_Pin|LD3_Pin|SPEAKER_VCC_Pin|LD1_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -380,7 +391,15 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-
+static void send_distance_UART(float distance)
+{
+	if (distance < 9999)
+	{
+		char uart_buf[23];
+		sprintf(uart_buf, "Distance: %.3f [m]\r\n", (distance));
+		HAL_UART_Transmit(&huart1, (uint8_t *)uart_buf, strlen(uart_buf), 100);
+	}
+}
 /* USER CODE END 4 */
 
 /**
