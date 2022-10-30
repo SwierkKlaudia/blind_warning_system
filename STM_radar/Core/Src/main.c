@@ -399,6 +399,15 @@ static void send_distance_UART(float distance)
 		sprintf(uart_buf, "Distance: %.3f [m]\r\n", (distance));
 		HAL_UART_Transmit(&huart1, (uint8_t *)uart_buf, strlen(uart_buf), 100);
 	}
+
+	if (distance < 0.4)
+	{
+		HAL_GPIO_WritePin(SPEAKER_VCC_GPIO_Port, SPEAKER_VCC_Pin, GPIO_PIN_SET);
+	}
+	else
+	{
+		HAL_GPIO_WritePin(SPEAKER_VCC_GPIO_Port, SPEAKER_VCC_Pin, GPIO_PIN_RESET);
+	}
 }
 /* USER CODE END 4 */
 
