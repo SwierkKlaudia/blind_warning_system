@@ -1828,8 +1828,8 @@ int detector_presence(void)
  8001222:	e003      	b.n	800122c <detector_presence+0x38>
 	}
 
-	acc_integration_sleep_ms(1000 / DEFAULT_UPDATE_RATE);
- 8001224:	2064      	movs	r0, #100	; 0x64
+	acc_integration_sleep_ms(100 / DEFAULT_UPDATE_RATE);
+ 8001224:	200a      	movs	r0, #10
  8001226:	f7ff ff6f 	bl	8001108 <acc_integration_sleep_ms>
 
 	return EXIT_SUCCESS;

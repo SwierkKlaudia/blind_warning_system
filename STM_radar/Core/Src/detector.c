@@ -75,7 +75,7 @@ int detector_presence(void)
 		return EXIT_FAILURE;
 	}
 
-	acc_integration_sleep_ms(1000 / DEFAULT_UPDATE_RATE);
+	acc_integration_sleep_ms(100 / DEFAULT_UPDATE_RATE);
 
 	return EXIT_SUCCESS;
 }
