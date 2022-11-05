@@ -61,7 +61,7 @@ static void MX_USART1_UART_Init(void);
 static void MX_USB_PCD_Init(void);
 static void MX_TIM2_Init(void);
 /* USER CODE BEGIN PFP */
-
+static void Send_Distance_UART(void);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -385,7 +385,7 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOD_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, LD2_Pin|LD3_Pin|LD1_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, LD2_Pin|LD3_Pin|SPEAKER_VCC_Pin|LD1_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin : B1_Pin */
   GPIO_InitStruct.Pin = B1_Pin;
@@ -393,8 +393,8 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(B1_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : LD2_Pin LD3_Pin LD1_Pin */
-  GPIO_InitStruct.Pin = LD2_Pin|LD3_Pin|LD1_Pin;
+  /*Configure GPIO pins : LD2_Pin LD3_Pin SPEAKER_VCC_Pin LD1_Pin */
+  GPIO_InitStruct.Pin = LD2_Pin|LD3_Pin|SPEAKER_VCC_Pin|LD1_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -417,12 +417,31 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
     Meas_distance.distance = Average_Distance((dist)time /(2.0 * SOUND_SPEED));
     Reset_Counter(&Meas_distance);
     HAL_TIM_IC_Start_IT(&htim2, HCSR04_STOP_CHANNEL);
+    Send_Distance_UART();
   }
 }
 
 dist Get_Distance(void)
 {
 	return (Meas_distance.distance);
+}
+
+static void Send_Distance_UART(void)
+{
+	float distance = Get_Distance();
+
+	char uart_buf[23];
+	sprintf(uart_buf, "Distance: %.1f [cm]\r\n", (distance));
+	HAL_UART_Transmit(&huart1, (uint8_t *)uart_buf, strlen(uart_buf), 100);
+
+	if (distance < 60)
+	{
+		HAL_GPIO_WritePin(SPEAKER_VCC_GPIO_Port, SPEAKER_VCC_Pin, GPIO_PIN_SET);
+	}
+	else
+	{
+		HAL_GPIO_WritePin(SPEAKER_VCC_GPIO_Port, SPEAKER_VCC_Pin, GPIO_PIN_RESET);
+	}
 }
 /* USER CODE END 4 */
 

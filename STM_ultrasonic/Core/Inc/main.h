@@ -82,6 +82,8 @@ dist Get_Distance(void);
 #define B3_GPIO_Port GPIOD
 #define JTDO_Pin GPIO_PIN_3
 #define JTDO_GPIO_Port GPIOB
+#define SPEAKER_VCC_Pin GPIO_PIN_4
+#define SPEAKER_VCC_GPIO_Port GPIOB
 #define LD1_Pin GPIO_PIN_5
 #define LD1_GPIO_Port GPIOB
 #define STLINK_RX_Pin GPIO_PIN_6

@@ -60,7 +60,7 @@ static void MX_USART1_UART_Init(void);
 static void MX_USB_PCD_Init(void);
 static void MX_SPI1_Init(void);
 /* USER CODE BEGIN PFP */
-static void send_distance_UART(float distance);
+static void Send_Distance_UART(float distance);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -100,7 +100,7 @@ int main(void)
   MX_USB_PCD_Init();
   MX_SPI1_Init();
   /* USER CODE BEGIN 2 */
-  detector_result = detector_init();
+  detector_result = Detector_Init();
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -109,15 +109,15 @@ int main(void)
   {
 	  if (EXIT_SUCCESS == detector_result)
 	  {
-		  detector_result = detector_presence();
-		  send_distance_UART(get_detector_distance());
+		  detector_result = Detector_Presence();
+		  Send_Distance_UART(Get_Detector_Distance());
 	  }
 	  else
 	  {
-		  detector_result = detector_deactivate();
+		  detector_result = Detector_Deactivate();
 		  if (EXIT_SUCCESS == detector_result)
 		  {
-			  detector_result = detector_init();
+			  detector_result = Detector_Init();
 		  }
 	  }
 
@@ -391,16 +391,17 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-static void send_distance_UART(float distance)
+static void Send_Distance_UART(float distance)
 {
 	if (distance < 9999)
 	{
+		distance = distance * 100;
 		char uart_buf[23];
-		sprintf(uart_buf, "Distance: %.3f [m]\r\n", (distance));
+		sprintf(uart_buf, "Distance: %.1f [cm]\r\n", (distance));
 		HAL_UART_Transmit(&huart1, (uint8_t *)uart_buf, strlen(uart_buf), 100);
 	}
 
-	if (distance < 0.4)
+	if (distance < 60)
 	{
 		HAL_GPIO_WritePin(SPEAKER_VCC_GPIO_Port, SPEAKER_VCC_Pin, GPIO_PIN_SET);
 	}

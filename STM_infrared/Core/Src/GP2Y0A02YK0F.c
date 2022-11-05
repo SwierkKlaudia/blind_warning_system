@@ -42,6 +42,7 @@ uint32_t Average_Distance(const uint32_t distance)
 	{
 		avg_distance = Average(buffor, NUMBER_OF_SAMPLES);
 		sample_counter = 0;
+
 	}
 	return avg_distance;
 }
