@@ -54,6 +54,7 @@ PCD_HandleTypeDef hpcd_USB_FS;
 /* USER CODE BEGIN PV */
 static uint32_t adc_measurement = 0;
 static volatile uint32_t distance_cm = 0;
+static uint8_t counter = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -449,10 +450,12 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc)
 		return;
 
 	distance_cm = Average_Distance(CONVERT_ADC_TO_DISTANCE(adc_measurement));
+	counter++;
 
-	if (distance_cm > 0)
+	if (counter > 3)
 	{
 		Send_Distance_UART(distance_cm);
+		counter = 0;
 	}
 }
 
@@ -462,7 +465,7 @@ static void Send_Distance_UART(uint32_t distance)
 	sprintf(uart_buf, "Distance: %lu [cm]\r\n", (distance));
 	HAL_UART_Transmit(&huart1, (uint8_t *)uart_buf, strlen(uart_buf), 100);
 
-	if (distance < 60)
+	if (distance < 50)
 	{
 		HAL_GPIO_WritePin(SPEAKER_VCC_GPIO_Port, SPEAKER_VCC_Pin, GPIO_PIN_SET);
 	}
