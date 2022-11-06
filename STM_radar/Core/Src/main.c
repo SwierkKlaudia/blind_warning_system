@@ -51,6 +51,9 @@ PCD_HandleTypeDef hpcd_USB_FS;
 
 /* USER CODE BEGIN PV */
 int detector_result = EXIT_FAILURE;
+static uint8_t counter = 0;
+static float average_distance = 0;
+static float distance = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -110,11 +113,24 @@ int main(void)
 	  if (EXIT_SUCCESS == detector_result)
 	  {
 		  detector_result = Detector_Presence();
-		  Send_Distance_UART(Get_Detector_Distance());
+		  distance = Get_Detector_Distance();
+
+		  if (distance != 9999)
+		  {
+			  counter++;
+			  average_distance = Average_Distance(distance);
+		  }
+
+		  if (counter > 10)
+		  {
+			  Send_Distance_UART(average_distance);
+			  counter = 0;
+		  }
 	  }
 	  else
 	  {
 		  detector_result = Detector_Deactivate();
+		  counter = 0;
 		  if (EXIT_SUCCESS == detector_result)
 		  {
 			  detector_result = Detector_Init();
