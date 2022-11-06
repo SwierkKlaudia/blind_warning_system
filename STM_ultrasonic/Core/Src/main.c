@@ -52,6 +52,7 @@ static Meas_distance_T Meas_distance={
 		.debounce_counter = 0,
 		.distance = 0
 };
+static uint8_t counter = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -417,7 +418,13 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
     Meas_distance.distance = Average_Distance((dist)time /(2.0 * SOUND_SPEED));
     Reset_Counter(&Meas_distance);
     HAL_TIM_IC_Start_IT(&htim2, HCSR04_STOP_CHANNEL);
-    Send_Distance_UART();
+    counter++;
+
+	if (counter > 3)
+	{
+	  Send_Distance_UART();
+	  counter = 0;
+	}
   }
 }
 

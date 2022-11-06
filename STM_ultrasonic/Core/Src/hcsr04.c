@@ -10,7 +10,7 @@
 #include <string.h>
 
 
-#define NUMBER_OF_SAMPLES 10U
+#define NUMBER_OF_SAMPLES 3U
 
 static uint8_t sample_counter = 0;
 static dist avg_distance = 0;
