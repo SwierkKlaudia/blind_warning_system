@@ -441,7 +441,7 @@ static void Send_Distance_UART(void)
 	sprintf(uart_buf, "Distance: %.1f [cm]\r\n", (distance));
 	HAL_UART_Transmit(&huart1, (uint8_t *)uart_buf, strlen(uart_buf), 100);
 
-	if (distance < 60)
+	if (distance < 50)
 	{
 		HAL_GPIO_WritePin(SPEAKER_VCC_GPIO_Port, SPEAKER_VCC_Pin, GPIO_PIN_SET);
 	}
