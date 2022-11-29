@@ -11,6 +11,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+#define NUMBER_OF_SAMPLES 5U
 
 uint32_t Average_Distance(const uint32_t distance);
 

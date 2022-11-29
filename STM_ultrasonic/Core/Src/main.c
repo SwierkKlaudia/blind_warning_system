@@ -420,7 +420,7 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
     HAL_TIM_IC_Start_IT(&htim2, HCSR04_STOP_CHANNEL);
     counter++;
 
-	if (counter > 3)
+	if (counter > NUMBER_OF_SAMPLES)
 	{
 	  Send_Distance_UART();
 	  counter = 0;

@@ -51,6 +51,8 @@ PCD_HandleTypeDef hpcd_USB_FS;
 
 /* USER CODE BEGIN PV */
 int detector_result = EXIT_FAILURE;
+int detector_result_init = EXIT_FAILURE;
+int detector_result_deactiv = EXIT_FAILURE;
 static uint8_t counter = 0;
 static float average_distance = 0;
 static float distance = 0;
@@ -103,17 +105,28 @@ int main(void)
   MX_USB_PCD_Init();
   MX_SPI1_Init();
   /* USER CODE BEGIN 2 */
-  detector_result = Detector_Init();
+  detector_result_init = Detector_Init();
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  if (EXIT_SUCCESS == detector_result)
+	  if (EXIT_SUCCESS == detector_result_init)
 	  {
 		  detector_result = Detector_Presence();
 		  distance = Get_Detector_Distance();
+
+		  if (EXIT_SUCCESS != detector_result)
+		  {
+			  counter = 0;
+			  detector_result_deactiv = Detector_Deactivate();
+		  }
+
+		  if (EXIT_SUCCESS == detector_result_deactiv)
+		  {
+			  detector_result_init = Detector_Init();
+		  }
 
 		  if (distance != 9999)
 		  {
@@ -121,20 +134,24 @@ int main(void)
 			  average_distance = Average_Distance(distance);
 		  }
 
-		  if (counter > 10)
+		  if (counter > NUMBER_OF_SAMPLES)
 		  {
 			  Send_Distance_UART(average_distance);
 			  counter = 0;
 		  }
+
+
 	  }
 	  else
 	  {
-		  detector_result = Detector_Deactivate();
-		  counter = 0;
-		  if (EXIT_SUCCESS == detector_result)
-		  {
-			  detector_result = Detector_Init();
-		  }
+		  detector_result_init = Detector_Init();
+
+//		  detector_result_deactiv = Detector_Deactivate();
+//		  counter = 0;
+//		  if (EXIT_SUCCESS == detector_result_deactiv)
+//		  {
+//			  detector_result_init = Detector_Init();
+//		  }
 	  }
 
 

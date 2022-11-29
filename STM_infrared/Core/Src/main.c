@@ -38,7 +38,7 @@
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
-#define CONVERT_ADC_TO_DISTANCE(adc_val)	((105500UL / adc_val) - 30)
+#define CONVERT_ADC_TO_DISTANCE(adc_val)	((101728 / adc_val) - 21.877)
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
@@ -452,7 +452,7 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc)
 	distance_cm = Average_Distance(CONVERT_ADC_TO_DISTANCE(adc_measurement));
 	counter++;
 
-	if (counter > 3)
+	if (counter > NUMBER_OF_SAMPLES)
 	{
 		Send_Distance_UART(distance_cm);
 		counter = 0;

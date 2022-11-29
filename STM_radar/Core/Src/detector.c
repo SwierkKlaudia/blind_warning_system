@@ -19,8 +19,6 @@
 #define DEFAULT_DETECTION_THRESHOLD (2.0f)
 #define DEFAULT_NBR_REMOVED_PC      (0)
 
-#define NUMBER_OF_SAMPLES 			10U
-
 static uint8_t sample_counter = 0;
 static float avg_distance = 0;
 
